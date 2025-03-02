@@ -1,0 +1,23 @@
+/* .custom-datepicker input{
+    height: 40px;  
+    width: 120px;  
+    font-size: 14px;
+    border-radius: 6px;
+    padding: 5px 10px;
+   
+} */
+
+.custom-datepicker .MuiInputBase-root {
+    font-size: 12px; /* Reduce font size */
+    padding: 4px 8px; /* Reduce padding */
+    min-height: 30px; /* Decrease height */
+}
+
+.custom-datepicker .MuiOutlinedInput-root {
+    font-size: 12px;
+    padding: 4px;
+}
+
+.custom-datepicker .MuiSvgIcon-root {
+    font-size: 16px !important; /* Reduce calendar icon size */
+}
