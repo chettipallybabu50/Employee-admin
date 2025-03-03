@@ -1,0 +1,79 @@
+.sidebar {
+    height: 100vh;
+    background-color: #333;
+    color: #fff;
+    padding: 10px;
+    transition: width 0.3s ease, padding 0.3s ease;
+}
+
+.open {
+    width: 250px;
+    padding: 10px;
+}
+
+.collapsed {
+    width: 60px;
+    padding: 10px 0;
+}
+
+.toggleButton {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background-color: #444;
+    color: #fff;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    margin-bottom: 10px;
+}
+
+.menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.menu li {
+    margin: 10px 0;
+}
+
+.link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #fff;
+    text-decoration: none;
+    padding: 10px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.link:hover {
+    background-color: #575757;
+}
+
+.linkText {
+    transition: opacity 0.3s ease;
+}
+
+.active {
+    background-color: #3B8274;
+}
+
+.logoutButton {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background-color: #e74c3c;
+    color: #fff;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.logoutButton:hover {
+    background-color: #c0392b;
+}
