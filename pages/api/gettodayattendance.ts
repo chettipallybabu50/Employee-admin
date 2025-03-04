@@ -6,10 +6,24 @@ export default async function todaysempattendance(req: NextApiRequest, res: Next
 
     try{
 
+        const { date } = req.query;
+        console.log('----->>>date', date)
+        let  today : string
+        if (date) {
+            // Use the provided date (assuming it's in 'YYYY-MM-DD' format)
+            today = date as string;
+        }
+        else{
+            const current = new Date();
+            current.setMinutes(current.getMinutes() - current.getTimezoneOffset());
+             today = current.toISOString().split("T")[0];
+
+        }
+
         // Get today's date in 'YYYY-MM-DD' format
-    const current = new Date();
-    current.setMinutes(current.getMinutes() - current.getTimezoneOffset());
-    const today = current.toISOString().split("T")[0];
+    // const current = new Date();
+    // current.setMinutes(current.getMinutes() - current.getTimezoneOffset());
+    //  today = current.toISOString().split("T")[0];
 
 console.log('------>>>currentDate', today);
 
