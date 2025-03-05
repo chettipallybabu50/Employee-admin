@@ -21,9 +21,27 @@ export default function AttendanceDashboard() {
   const [noData, setNoData] = useState(false);
   const [noLinedata, setLineData] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [intimeempdata, setIntimeempdata] = useState<{ name: string; value: number }[]>([]);
+  const [Outtimeempdata, setOuttimeempdata] = useState<{ name: string; value: number }[]>([]);
+
 
   const filterOptions: string[] = ["Daily", "Monthly", "Yearly", "Department"];
   const COLORS = ["#4CAF50", "#F44336"]; // Green for Present, Red for Absent
+
+
+  // Dummy data for attendance distribution
+const TimewiseattendanceData = [
+  { name: 'Before 9 AM', value: 10 },
+  { name: '9:00 - 9:30 AM', value: 20 },
+  { name: '9:30 - 10:00 AM', value: 15 },
+  { name: '10:00 - 10:30 AM', value: 25 },
+  { name: '10:30 - 11:00 AM', value: 10 },
+  { name: '11:00 - 11:30 AM', value: 10 },
+  { name: 'After 11:30 AM', value: 10 },
+];
+
+const TimeCOLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
+
 
   // Fetch initial data (unchanged)
   useEffect(() => {
@@ -50,6 +68,28 @@ export default function AttendanceDashboard() {
             Absent: Number(dept.total_absent),
           }));
           setDepartmentData(formattedDepartmentData);
+
+          //In Time Graph
+          const { before_9am, between_9_to_10am, between_10_to_11am, after_11am } = data.inTimeData;
+          const InTimewiseattendanceData = [
+            { name: 'Before 9 AM', value: Number(before_9am) },
+            { name: '9:00 - 10:00 AM', value: Number(between_9_to_10am) },
+            { name: '10:00 - 11:00 AM', value: Number(between_10_to_11am) },
+            { name: 'After 11:00 AM', value: Number(after_11am)},
+          ];
+          setIntimeempdata(InTimewiseattendanceData)
+
+          // Out Time Graph
+          const { before_5pm, between_5_to_6pm, between_6_to_7pm, after_7pm } = data.outTimeData;
+          const OutTimewiseattendanceData = [
+            { name: 'Before 5 PM', value: Number(before_5pm) },
+            { name: '5:00 - 6:00 PM', value: Number(between_5_to_6pm) },
+            { name: '6:00 - 7:00 PM', value: Number(between_6_to_7pm) },
+            { name: 'After 7:00 PM', value: Number(after_7pm)},
+          ];
+          setOuttimeempdata(OutTimewiseattendanceData)
+
+
         }
       } catch (err) {
         console.error("Error fetching attendance data:", err);
@@ -253,9 +293,78 @@ export default function AttendanceDashboard() {
               )}
             </div>
           </div>
+
+
+
+          {/* time wise attendance */}
+            <div className="bg-white rounded-lg border border-gray-300 shadow-lg p-4 sm:p-6 max-w-7xl mx-auto">
+              <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-left mb-4">Time-wise Attendance</h2>
+
+
+              {/* Bar and Pie Charts */}
+              <div className="flex flex-col lg:flex-row justify-center items-center gap-6">
+
+                <div className="w-full lg:w-1/2 shadow-lg border border-gray-300 rounded-lg p-4 bg-white">
+                  <div className="flex justify-between  mb-2">
+                    <h3 className="text-base sm:text-lg font-semibold text-gray-800">In Time</h3>
+                    <button className="px-3 py-1 bg-blue-500 text-white text-sm rounded-md hover:bg-blue-600 transition-colors">
+                      Details
+                    </button>
+                  </div>
+                  <ResponsiveContainer width="100%" height={400}>
+                    <PieChart>
+                      <Pie
+                        data={intimeempdata}
+                        cx="50%"
+                        cy="50%"
+                        outerRadius={80}
+                        fill="#8884d8"
+                        dataKey="value"
+                        label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
+                      >
+                        {intimeempdata.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={TimeCOLORS[index % TimeCOLORS.length]} />
+                        ))}
+                      </Pie>
+                      <Tooltip />
+                      <Legend />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+                <div className="w-full lg:w-1/2 shadow-lg border border-gray-300 rounded-lg p-4 bg-white">
+                  <div className="flex justify-between items-center mb-2">
+                    <h3 className="text-base sm:text-lg font-semibold text-gray-800">Out Time</h3>
+                    <button className="px-3 py-1 bg-blue-500 text-white text-sm rounded-md hover:bg-blue-600 transition-colors">
+                      Details
+                    </button>
+                  </div>
+                  <ResponsiveContainer width="100%" height={400}>
+                    <PieChart>
+                      <Pie
+                        data={Outtimeempdata}
+                        cx="50%"
+                        cy="50%"
+                        outerRadius={80}
+                        fill="#8884d8"
+                        dataKey="value"
+                        label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
+                      >
+                        {Outtimeempdata.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={TimeCOLORS[index % TimeCOLORS.length]} />
+                        ))}
+                      </Pie>
+                      <Tooltip />
+                      <Legend />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+
+              </div>
+            </div>
+
         </div>
       ) : (
-        <div className="text-left mt-20 text-base sm:text-lg">No attendance data available.</div>
+        <div className="text-center mt-20 text-base sm:text-lg">No attendance data available.</div>
       )}
     </div>
   );
