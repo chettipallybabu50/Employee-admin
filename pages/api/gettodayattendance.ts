@@ -20,15 +20,7 @@ export default async function todaysempattendance(req: NextApiRequest, res: Next
 
         }
 
-        // Get today's date in 'YYYY-MM-DD' format
-    // const current = new Date();
-    // current.setMinutes(current.getMinutes() - current.getTimezoneOffset());
-    //  today = current.toISOString().split("T")[0];
-
 console.log('------>>>currentDate', today);
-
-    // const query = `SELECT * FROM Employeeattendance WHERE date = ?`;
-    // const [result] = await db.query<RowDataPacket[]>(query, [today]);
 
     const query = `
     SELECT *,
@@ -61,9 +53,36 @@ console.log('------>>>currentDate', today);
 
     const [departmentResult] = await db.query<RowDataPacket[]>(departmentQuery, [today]);
 
+      // Get count based on In Time
+      const inTimeQuery = `
+      SELECT 
+          COUNT(*) AS total_count,
+          SUM(CASE WHEN \`In Time\` < '09:00:00' THEN 1 ELSE 0 END) AS before_9am,
+          SUM(CASE WHEN \`In Time\` >= '09:00:00' AND \`In Time\` < '10:00:00' THEN 1 ELSE 0 END) AS between_9_to_10am,
+          SUM(CASE WHEN \`In Time\` >= '10:00:00' AND \`In Time\` < '11:00:00' THEN 1 ELSE 0 END) AS between_10_to_11am,
+          SUM(CASE WHEN \`In Time\` >= '11:00:00' THEN 1 ELSE 0 END) AS after_11am
+      FROM Employeeattendance
+      WHERE \`Date\` = ? AND \`Status\` = 'Present';
+      `;
+
+      const [inTimeResult] = await db.query<RowDataPacket[]>(inTimeQuery, [today]);
+
+        // Get count based on Out Time
+        const outTimeQuery = `
+        SELECT 
+            COUNT(*) AS total_count,
+            SUM(CASE WHEN \`Out Time\` < '17:00:00' THEN 1 ELSE 0 END) AS before_5pm,
+            SUM(CASE WHEN \`Out Time\` >= '17:00:00' AND \`Out Time\` < '18:00:00' THEN 1 ELSE 0 END) AS between_5_to_6pm,
+            SUM(CASE WHEN \`Out Time\` >= '18:00:00' AND \`Out Time\` < '19:00:00' THEN 1 ELSE 0 END) AS between_6_to_7pm,
+            SUM(CASE WHEN \`Out Time\` >= '19:00:00' THEN 1 ELSE 0 END) AS after_7pm
+        FROM Employeeattendance
+        WHERE \`Date\` = ? AND \`Status\` = 'Present';
+        `;
+
+        const [outTimeResult] = await db.query<RowDataPacket[]>(outTimeQuery, [today]);
+
+
     if(result.length>0){
-        // const presentCount = result.filter((emp) => emp.Status === "Present").length;
-        // const absentCount = result.filter((emp) => emp.Status === "Absent").length;
         res.status(200).json({
             status: true,
             message: "Data fetched successfully",
@@ -73,6 +92,8 @@ console.log('------>>>currentDate', today);
             departmentCount: result[0]?.departmentCount ?? 0,
             data: result,
             departmentData: departmentResult,
+            inTimeData: inTimeResult[0] ?? {}, // In Time Data
+            outTimeData: outTimeResult[0] ?? {} // Out Time Data
     
         })
     }

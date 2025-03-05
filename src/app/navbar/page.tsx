@@ -71,7 +71,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { FiMenu, FiHome, FiPieChart, FiClipboard, FiFileText, FiLogOut } from "react-icons/fi";
+import { FiMenu, FiHome, FiPieChart, FiClipboard, FiFileText, FiLogOut, FiUsers } from "react-icons/fi";
 import Link from "next/link";
 import styles from './navbar.module.css'; // Import the CSS module
 
@@ -101,6 +101,7 @@ export default function Sidebar() {
     { name: "Charts", path: "/charts", icon: <FiPieChart /> },
     { name: "Services", path: "/services", icon: <FiClipboard /> },
     { name: "Reports", path: "/reports", icon: <FiFileText /> },
+    { name: "Attendance Details", path: "/empattendancedetails", icon: <FiUsers /> },
   ];
 
   return (
