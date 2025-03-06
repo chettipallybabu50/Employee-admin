@@ -176,6 +176,89 @@ const TimeCOLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
     fetchattedanceforselecteLinedate(linecurrentdat);
   };
 
+  const downloadExcel = async (timeType: string) => {
+    try {
+      const response = await fetch(`/api/generateempxcell?timeType=${encodeURIComponent(timeType)}`);
+  
+      if (!response.ok) {
+        throw new Error("Failed to download file");
+      }
+  
+      // Get the filename from Content-Disposition header
+      const contentDisposition = response.headers.get("Content-Disposition");
+      let filename = `attendance_${timeType.replace(/\s/g, "_")}.xlsx`; // Default name with timeType
+  
+      if (contentDisposition) {
+        const match = contentDisposition.match(/filename="?([^"]+)"?/);
+        if (match && match[1]) {
+          filename = match[1]; // Extract filename from header
+        }
+      }
+  
+      // Convert response to blob
+      const blob = await response.blob();
+  
+      // Create a temporary URL for the file
+      const url = window.URL.createObjectURL(blob);
+  
+      // Create a hidden link element
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename; // Use extracted filename
+      document.body.appendChild(a);
+      a.click();
+  
+      // Cleanup
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (error) {
+      console.error("Error downloading file:", error);
+    }
+  };
+  
+
+ 
+  // const downloadinTime = async () => {
+  //   try {
+  //     const response = await fetch("/api/generateempxcell");
+  
+  //     if (!response.ok) {
+  //       throw new Error("Failed to download file");
+  //     }
+  
+  //     // Get the filename from Content-Disposition header
+  //     const contentDisposition = response.headers.get("Content-Disposition");
+  //     let filename = "attendance.xlsx"; // Default name
+  
+  //     if (contentDisposition) {
+  //       const match = contentDisposition.match(/filename="?([^"]+)"?/);
+  //       if (match && match[1]) {
+  //         filename = match[1]; // Extract filename from header
+  //       }
+  //     }
+  
+  //     // Convert response to blob
+  //     const blob = await response.blob();
+  
+  //     // Create a temporary URL for the file
+  //     const url = window.URL.createObjectURL(blob);
+  
+  //     // Create a hidden link element
+  //     const a = document.createElement("a");
+  //     a.href = url;
+  //     a.download = filename; // Use extracted filename
+  //     document.body.appendChild(a);
+  //     a.click();
+  
+  //     // Cleanup
+  //     window.URL.revokeObjectURL(url);
+  //     document.body.removeChild(a);
+  //   } catch (error) {
+  //     console.error("Error downloading file:", error);
+  //   }
+  // };
+  
+
   return (
     <div className="min-h-screen bg-gray-100 p-4 sm:p-6">
       {loading ? (
@@ -307,8 +390,9 @@ const TimeCOLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
                 <div className="w-full lg:w-1/2 shadow-lg border border-gray-300 rounded-lg p-4 bg-white">
                   <div className="flex justify-between  mb-2">
                     <h3 className="text-base sm:text-lg font-semibold text-gray-800">In Time</h3>
-                    <button className="px-3 py-1 bg-blue-500 text-white text-sm rounded-md hover:bg-blue-600 transition-colors">
-                      Details
+                    <button className="px-3 py-1 bg-blue-500 text-white text-sm rounded-md hover:bg-blue-600 transition-colors
+                    " onClick={() => downloadExcel("InTime")}>
+                    Download
                     </button>
                   </div>
                   <ResponsiveContainer width="100%" height={400}>
@@ -334,8 +418,9 @@ const TimeCOLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
                 <div className="w-full lg:w-1/2 shadow-lg border border-gray-300 rounded-lg p-4 bg-white">
                   <div className="flex justify-between items-center mb-2">
                     <h3 className="text-base sm:text-lg font-semibold text-gray-800">Out Time</h3>
-                    <button className="px-3 py-1 bg-blue-500 text-white text-sm rounded-md hover:bg-blue-600 transition-colors">
-                      Details
+                    <button className="px-3 py-1 bg-blue-500 text-white text-sm rounded-md hover:bg-blue-600 transition-colors"
+                    onClick={() => downloadExcel("OutTime")}>
+                      Download
                     </button>
                   </div>
                   <ResponsiveContainer width="100%" height={400}>
